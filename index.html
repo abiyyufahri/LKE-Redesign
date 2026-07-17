@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Login — Transformasi Digital</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'DM Sans', sans-serif; }
+        .title-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Background image on left panel */
+.left-panel {
+    background-image: url('https://transformasidigital.idampalada.com/pusdatin.jpeg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        /* Dark overlay so text stays readable */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(240, 241, 243, 0.82);
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* Ensure all content inside sits above the overlay */
+        .left-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Golden accent line */
+        .gold-line::before {
+            content: '';
+            display: inline-block;
+            width: 2rem;
+            height: 2px;
+            background-color: #f59e0b;
+            margin-right: 0.75rem;
+            vertical-align: middle;
+        }
+
+        /* Right panel declarations */
+        .right-panel {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Button MASUK shimmer ── */
+        @keyframes shimmer {
+            0%   { transform: translateX(-120%) skewX(-20deg); }
+            100% { transform: translateX(220%) skewX(-20deg); }
+        }
+        .masuk-btn {
+            background: #1e3a5f;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(30, 58, 95, 0.35);
+            transition: box-shadow 0.3s ease, background 0.3s ease, transform 0.1s ease;
+        }
+        .masuk-btn:focus-visible {
+            outline: 2px solid #f59e0b;
+            outline-offset: 2px;
+        }
+        .masuk-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+            transform: translateX(-120%) skewX(-20deg);
+            animation: shimmer 2.6s ease-in-out infinite;
+        }
+        .masuk-btn:hover {
+            background: #162d4a;
+            box-shadow: 0 6px 28px rgba(30, 58, 95, 0.5);
+            transform: translateY(-1px);
+        }
+        .masuk-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(30, 58, 95, 0.3);
+        }
+
+        /* ── Zona Integritas badge shimmer ── */
+        @keyframes badgeShimmer {
+            0%   { transform: translateX(-120%) skewX(-20deg); }
+            100% { transform: translateX(280%) skewX(-20deg); }
+        }
+        .zona-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        .zona-badge::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 35%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            transform: translateX(-120%) skewX(-20deg);
+            animation: badgeShimmer 3s ease-in-out infinite 0.5s;
+        }
+
+        /* Input focus style */
+        .custom-input {
+            background-color: #eef2fb;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .custom-input:focus {
+            background-color: #fff;
+            border-color: #1e3a5f;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.08);
+        }
+        /* Removed top gradient bar */
+    </style>
+</head>
+
+<body class="min-h-screen flex bg-[#f0f1f3]">
+
+    <!-- LEFT SIDE -->
+    <div class="hidden lg:flex w-3/5 left-panel p-10 lg:p-14 flex-col justify-between relative overflow-hidden">
+
+        <!-- Top: Logo -->
+        <div class="flex items-center gap-4">
+<img src="https://transformasidigital.idampalada.com/favicon.ico" class="w-12 h-12 object-contain">
+            <div>
+                <p class="text-sm font-semibold text-[#1e3a5f] tracking-wider leading-tight">KEMENTERIAN</p>
+                <p class="text-sm font-semibold text-[#1e3a5f] tracking-wider leading-tight">PEKERJAAN UMUM</p>
+            </div>
+        </div>
+
+        <!-- Middle: Main Content -->
+        <div class="flex-1 flex flex-col justify-center mt-10">
+
+            <p class="gold-line text-[#f59e0b] tracking-widest text-xs font-semibold uppercase mb-6">
+                Pusat Data Teknologi dan Informasi
+            </p>
+
+            <h1 class="title-font text-6xl lg:text-7xl font-bold text-[#1e3a5f] leading-[0.9] mb-2">
+                Transformasi
+            </h1>
+            <h1 class="title-font text-6xl lg:text-7xl font-bold text-[#f59e0b] leading-[0.9] mb-2">
+                Digital
+            </h1>
+            <!-- Underline accent -->
+            <div class="w-24 h-1 bg-[#f59e0b] mt-1 mb-6 rounded-full"></div>
+
+            <p class="text-[#5a6478] text-base leading-relaxed max-w-sm">
+                Platform terpadu pengelolaan data dan teknologi informasi
+                untuk mendukung transformasi digital Kementerian
+                Pekerjaan Umum.
+            </p>
+
+            <!-- Zona Integritas Badge -->
+            <div class="zona-badge mt-10 bg-[#1e3a5f] text-white px-6 py-3 rounded-full w-full max-w-sm flex items-center gap-3 text-sm font-medium">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] inline-block"></span>
+                Zona Integritas · WBBM
+            </div>
+
+            <!-- Zona description box -->
+            <div class="mt-6 border-l-4 border-[#f59e0b] pl-5 max-w-sm">
+                <p class="text-[#5a6478] text-sm leading-relaxed">
+                    Dalam menunjang Zona Integritas menuju Wilayah Birokrasi
+                    Bersih dan Melayani (WBBM), PUSDATIN berkomitmen
+                    meningkatkan kualitas layanan publik yang bebas dari
+                    korupsi dan memberikan pelayanan prima.
+                </p>
+            </div>
+        </div>
+
+        <!-- Bottom: Stats -->
+        <div class="flex gap-14 mt-8">
+            <div>
+                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">2026</h3>
+                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Tahun Aktif</p>
+                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
+    Tahun Aktif
+</p> -->
+            </div>
+            <div class="border-l border-[#d1d5db] pl-14">
+                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">WBBM</h3>
+                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Target ZI</p>
+                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
+    Target ZI
+</p> -->
+            </div>
+            <div class="border-l border-[#d1d5db] pl-14">
+                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">PU</h3>
+                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Kementerian</p>
+                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
+    Kementerian
+</p> -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="w-full lg:w-2/5 flex items-center justify-center px-12 py-8 lg:py-0 right-panel" style="background: linear-gradient(160deg, #ffffff 60%, #f4f6fb 100%);">
+
+        <div class="w-full max-w-md relative z-10">
+            <!-- Gold accent label -->
+    <p class="text-[#f59e0b] tracking-widest text-sm font-semibold uppercase mb-5 gold-line">
+        Autentikasi Pengguna
+    </p>
+
+    <h2 class="title-font text-5xl font-bold text-[#1e3a5f]">
+        Selamat Datang
+    </h2>
+
+    <p class="text-[#8a93a6] mt-3 mb-6 text-base">
+        Silakan masuk menggunakan akun Pusdatin Anda.
+    </p>
+
+    <form method="POST" action="https://transformasidigital.idampalada.com/login" class="space-y-4">
+        <input type="hidden" name="_token" value="fhf0IMCjc2hEu35EEA7xZ4A78dwNZMoBXrwaMIBj" autocomplete="off">
+        <!-- Email -->
+        <div>
+            <label class="block text-sm font-semibold tracking-widest text-[#1e3a5f] uppercase mb-2">
+                Email
+            </label>
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a93a6]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+                    </svg>
+                </span>
+                <input type="text"
+                    name="email"
+                    value=""
+                    required autofocus
+                    placeholder="userpusdatin@pu.go.id"
+                    class="custom-input w-full rounded-xl px-5 py-3.5 pl-12 text-base text-[#1e3a5f] placeholder-[#9ca3af]">
+            </div>
+                    </div>
+
+        <!-- PASSWORD -->
+        <div>
+            <label class="block text-sm font-semibold tracking-widest text-[#1e3a5f] uppercase mb-2">
+                Password
+            </label>
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a93a6]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                    </svg>
+                </span>
+                <input type="password"
+                    id="password-input"
+                    name="password"
+                    required
+                    placeholder="••••••••••"
+                    class="custom-input w-full rounded-xl px-5 py-3.5 pl-12 pr-12 text-base text-[#1e3a5f] placeholder-[#9ca3af]">
+                <!-- Eye toggle -->
+                <button type="button"
+                    onclick="togglePassword()"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a93a6] hover:text-[#1e3a5f] transition-colors">
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                    </svg>
+                </button>
+            </div>
+                    </div>
+<!-- Lupa Password -->
+<div class="flex justify-end pt-1">
+    <a href="https://transformasidigital.idampalada.com/forgot-password"
+        class="text-xs text-[#8a93a6] hover:text-[#f59e0b] transition-colors duration-200 font-medium tracking-wide">
+        Lupa password?
+    </a>
+</div>
+        
+
+        <!-- BUTTON -->
+        <button type="submit" class="masuk-btn w-full text-white font-semibold py-3.5 rounded-xl tracking-widest text-base transition-all duration-300 focus:outline-none">
+            <span class="relative z-10">MASUK</span>
+        </button>
+
+        <!-- LINK DASHBOARD -->
+        <a href="https://transformasidigital.idampalada.com/dashboard" 
+           class="flex items-center justify-center w-full text-[#1e3a5f] border-2 border-[#d1d5db] bg-transparent font-semibold py-3.5 rounded-xl text-sm transition-all duration-300 hover:border-[#1e3a5f] hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:ring-offset-2">
+            Lihat Dashboard Monitoring (Tanpa Login)
+        </a>
+                <!--  TURNSTILE DI SINI -->
+        <div class="mt-4 flex justify-center">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADAVdPTI91kRSSJW"></div>
+        </div>
+
+    </form>
+
+    <!-- CALL CENTER -->
+    <div class="mt-8 text-center">
+
+        <!-- Divider with label -->
+        <div class="flex items-center gap-3 mb-4">
+            <div class="flex-1 h-px bg-gray-200"></div>
+            <span class="text-xs tracking-[0.2em] text-[#b0b8c8] font-semibold uppercase">Bantuan</span>
+            <div class="flex-1 h-px bg-gray-200"></div>
+        </div>
+
+        <!-- Card -->
+        <div class="rounded-2xl border border-[#eaecf0] bg-[#f9fafb] p-4">
+
+            <!-- Header -->
+            <p class="text-sm font-bold text-[#1e3a5f] tracking-[0.15em] uppercase mb-1">Call Center</p>
+            <p class="text-sm text-[#8a93a6] mb-4">Penilaian Transformasi Digital</p>
+
+            <!-- Phone buttons -->
+            <div class="space-y-2.5">
+                <a href="https://wa.me/62817846621" target="_blank"
+                    class="flex items-center justify-center gap-3 w-full bg-white border border-[#eaecf0] rounded-xl px-4 py-3 hover:border-[#f59e0b] hover:shadow-sm transition-all duration-200 cursor-pointer">
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#f59e0b] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12.031 21c-1.618 0-3.197-.433-4.582-1.256l-5.112 1.34 1.365-4.985A8.956 8.956 0 012.44 12c0-4.963 4.041-9 9.004-9s9.004 4.037 9.004 9-4.041 9-9.417 9zm.006-16.5c-4.137 0-7.503 3.366-7.503 7.5 0 1.32.348 2.612 1.01 3.748l-.87 3.178 3.251-.853A7.458 7.458 0 0012.037 19.5c4.137 0 7.503-3.366 7.503-7.5s-3.366-7.5-7.503-7.5zm4.12 10.222c-.226-.113-1.336-.66-1.543-.736-.207-.075-.358-.113-.509.113-.15.226-.583.736-.715.887-.132.15-.264.17-.49.056-.226-.113-.953-.351-1.815-1.121-.67-.598-1.122-1.338-1.254-1.564-.132-.226-.014-.349.099-.461.101-.1.226-.264.339-.396.113-.132.15-.226.226-.377.075-.15.038-.283-.019-.396-.056-.113-.509-1.226-.697-1.678-.183-.442-.369-.382-.509-.389-.132-.007-.283-.007-.433-.007s-.396.056-.603.283c-.207.226-.791.773-.791 1.885 0 1.112.81 2.187.923 2.338.113.15 1.595 2.432 3.864 3.413.541.233.963.372 1.293.477.543.172 1.038.148 1.428.09.435-.065 1.336-.547 1.524-1.075.188-.528.188-.98.132-1.075-.056-.094-.207-.15-.433-.264z"/>
+                    </svg>
+                    
+                    <span class="text-base font-semibold text-[#1e3a5f]">0817-846-621</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="text-sm text-[#c0c7d3] mt-4">
+            © 2026 <strong class="text-[#8a93a6]">Transformasi Digital</strong> — Kementerian Pekerjaan Umum
+        </p>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password-input');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Highlight gold-line pseudo element for the right panel label
+        // (uses same CSS class defined in layout)
+    </script>
+
+    
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        </div>
+
+    </div>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"631f700e3f054b1abb1fd6ca060b1ba0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
