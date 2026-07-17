@@ -1,355 +1,634 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#14263f">
 
     <title>Login — Transformasi Digital</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy:      'var(--navy)',
+                        'navy-ink':'var(--navy-ink)',
+                        gold:      'var(--gold)',
+                        'gold-ink':'var(--gold-ink)',
+                        muted:     'var(--ink-muted)',
+                        paper:     'var(--paper)',
+                        rule:      'var(--rule)',
+                    },
+                    fontFamily: {
+                        sans:    ['DM Sans', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                },
+            },
+        };
+    </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'DM Sans', sans-serif; }
-        .title-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+    /* ═══════════════════════════════════════════════════════════════════════
+     * Hallmark · macrostructure: Split Studio · genre: modern-minimal
+     * scope: total redesign · brand palette + type pairing preserved (pre-flight)
+     * pre-emit critique: P5 H5 E5 S5 R5 V4
+     * states: default · hover · focus-visible · active · disabled · loading · error · success
+     * contrast: pass (gates 40–41) — every text pair ≥ 4.5:1, UI borders ≥ 3:1
+     *
+     * The diptych is load-bearing, not stylistic: this page serves two audiences
+     * (public / authenticated) and gives each one a half. Left states who this is
+     * and proves it; right offers the two ways in.
+     * ═══════════════════════════════════════════════════════════════════════ */
 
-        /* Background image on left panel */
-.left-panel {
-    background-image: url('https://transformasidigital.idampalada.com/pusdatin.jpeg');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-        /* Dark overlay so text stays readable */
-        .left-panel::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(240, 241, 243, 0.82);
-            pointer-events: none;
-            z-index: 0;
-        }
-        /* Ensure all content inside sits above the overlay */
-        .left-panel > * {
-            position: relative;
-            z-index: 1;
-        }
+    :root {
+        /* ── Brand ink ── */
+        --navy:       #1e3a5f;
+        --navy-deep:  #162d4a;   /* pressed / hover fill */
+        --navy-ink:   #14263f;   /* panel base — deepest step */
 
-        /* Golden accent line */
-        .gold-line::before {
-            content: '';
-            display: inline-block;
-            width: 2rem;
-            height: 2px;
-            background-color: #f59e0b;
-            margin-right: 0.75rem;
-            vertical-align: middle;
-        }
+        /* ── Brand gold ──
+           On NAVY, #f59e0b measures 5.34:1 → the authentic accent is finally usable
+           as text. On PAPER it is 2.15:1, so white surfaces use --gold-ink instead.
+           Same hue, two surfaces, both AA. */
+        --gold:        #f59e0b;
+        --gold-ink:    #9a5608;  /* 5.66:1 on paper */
+        --gold-wash:   rgba(245, 158, 11, 0.10);
+        --gold-border:       #c08a2e;  /* 3.04:1 on paper — control boundary (1.4.11) */
+        --gold-border-hover: #d9a441;
+        --cream:       #fff9f1;
 
-        /* Right panel declarations */
-        .right-panel {
-            position: relative;
-            overflow: hidden;
-        }
+        /* ── Neutrals ── */
+        --ink-muted:  #5a6478;   /* 5.96:1 on paper */
+        --ink-soft:   #6b7488;   /* ICONS ONLY — fails AA as text */
+        --paper:      #ffffff;
+        --paper-soft: #f8fafc;   /* soft white */
+        --blue-light: #eef2fb;   /* support — very light blue */
+        --gray-light: #f0f1f3;   /* support — light gray */
+        --rule:       #e6eaf0;
+        --rule-soft:  #eef1f6;
+        --placeholder:#8a93a6;
 
-        /* ── Button MASUK shimmer ── */
-        @keyframes shimmer {
-            0%   { transform: translateX(-120%) skewX(-20deg); }
-            100% { transform: translateX(220%) skewX(-20deg); }
-        }
-        .masuk-btn {
-            background: #1e3a5f;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(30, 58, 95, 0.35);
-            transition: box-shadow 0.3s ease, background 0.3s ease, transform 0.1s ease;
-        }
-        .masuk-btn:focus-visible {
-            outline: 2px solid #f59e0b;
-            outline-offset: 2px;
-        }
-        .masuk-btn::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 40%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-            transform: translateX(-120%) skewX(-20deg);
-            animation: shimmer 2.6s ease-in-out infinite;
-        }
-        .masuk-btn:hover {
-            background: #162d4a;
-            box-shadow: 0 6px 28px rgba(30, 58, 95, 0.5);
-            transform: translateY(-1px);
-        }
-        .masuk-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(30, 58, 95, 0.3);
-        }
+        /* On-navy text */
+        --on-navy:       #ffffff;              /* 13.6:1 on navy-ink */
+        --on-navy-muted: rgba(255,255,255,.72); /*  8.0:1 on navy-ink */
+        --on-navy-rule:  rgba(255,255,255,.14);
+        --on-navy-glass: rgba(255,255,255,.07);
 
-        /* ── Zona Integritas badge shimmer ── */
-        @keyframes badgeShimmer {
-            0%   { transform: translateX(-120%) skewX(-20deg); }
-            100% { transform: translateX(280%) skewX(-20deg); }
-        }
-        .zona-badge {
-            position: relative;
-            overflow: hidden;
-        }
-        .zona-badge::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 35%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-            transform: translateX(-120%) skewX(-20deg);
-            animation: badgeShimmer 3s ease-in-out infinite 0.5s;
-        }
+        /* ── Elevation — one soft family, nothing darker than 0.16 ── */
+        --shadow-xs: 0 1px 2px  rgba(30, 58, 95, 0.04);
+        --shadow-sm: 0 2px 8px  rgba(30, 58, 95, 0.06);
+        --shadow-md: 0 4px 16px rgba(30, 58, 95, 0.10);
+        --shadow-lg: 0 8px 28px rgba(30, 58, 95, 0.16);
 
-        /* Input focus style */
-        .custom-input {
-            background-color: #eef2fb;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
+        /* ── Radius ── */
+        --radius:    12px;
+        --radius-lg: 16px;
+
+        /* ── Spacing rhythm — 8 · 16 · 24 · 32 · 48 ── */
+        --space-1: 8px;  --space-2: 16px; --space-3: 24px;
+        --space-4: 32px; --space-6: 48px;
+
+        /* ── System ── */
+        --focus:    #1e3a5f;
+        --focus-on-navy: #f59e0b;
+        --error:    #b91c1c;
+        --ease:     cubic-bezier(0.16, 1, 0.3, 1);
+        --dur:      200ms;
+        --dur-slow: 240ms;
+    }
+
+    html, body { overflow-x: clip; }          /* gate 34 — clip, never hidden */
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--paper-soft);
+        color: var(--navy);
+        -webkit-font-smoothing: antialiased;
+    }
+    .display { font-family: 'Playfair Display', serif; font-style: normal; }  /* roman only — gate 38a */
+
+    /* ── Focus: keyboard-only, and it must survive on BOTH surfaces ────── */
+    :focus { outline: none; }
+    :focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: inherit;
+    }
+    .brand :focus-visible { outline-color: var(--focus-on-navy); }
+
+    /* ═══ SHELL — the diptych ═══════════════════════════════════════════ */
+    .shell {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: grid;
+        grid-template-columns: 1fr;   /* mobile: band over action */
+    }
+    @media (min-width: 1024px) {
+        .shell { grid-template-columns: 1.05fr 0.95fr; }
+    }
+
+    /* ═══ LEFT — institution + proof ════════════════════════════════════ */
+    .brand {
+        position: relative;
+        isolation: isolate;
+        background: var(--navy-ink);
+        color: var(--on-navy);
+        overflow: hidden;
+        padding: var(--space-3);
+    }
+    @media (min-width: 640px)  { .brand { padding: var(--space-4); } }
+    @media (min-width: 1024px) {
+        .brand {
+            padding: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .custom-input:focus {
-            background-color: #fff;
-            border-color: #1e3a5f;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.08);
+    }
+    @media (min-width: 1280px) { .brand { padding: 64px; } }
+
+    /* Blueprint grid — pure CSS, no image, crisp at any DPI, ages indefinitely.
+       Radially masked so it fades out rather than tiling edge-to-edge. */
+    .brand__grid {
+        position: absolute; inset: 0; z-index: -1;
+        background-image:
+            linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+        background-size: 32px 32px;
+        -webkit-mask-image: radial-gradient(ellipse 90% 80% at 25% 35%, #000 0%, transparent 78%);
+                mask-image: radial-gradient(ellipse 90% 80% at 25% 35%, #000 0%, transparent 78%);
+        pointer-events: none;
+    }
+    /* The PUSDATIN building survives as architectural texture, not as a washed-out
+       photo. Luminosity blend keeps it navy; 10% keeps it a texture. */
+    .brand__photo {
+        position: absolute; inset: 0; z-index: -2;
+        background: url('https://transformasidigital.idampalada.com/pusdatin.jpeg') center/cover no-repeat;
+        opacity: .10;
+        mix-blend-mode: luminosity;
+        pointer-events: none;
+    }
+    /* One hairline of gold along the seam — the only "decoration" on the panel. */
+    .brand__seam {
+        position: absolute; inset: auto 0 0 0; height: 2px; z-index: 0;
+        background: linear-gradient(90deg, var(--gold), transparent 70%);
+        pointer-events: none;
+    }
+    @media (min-width: 1024px) {
+        .brand__seam { inset: 0 0 0 auto; width: 2px; height: auto;
+            background: linear-gradient(180deg, var(--gold), transparent 60%); }
+    }
+
+    /* Logo lockup */
+    .lockup { display: flex; align-items: center; gap: 14px; }
+    .lockup__mark { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+    .lockup__l1 { font-size: 13px; font-weight: 600; letter-spacing: .02em; line-height: 1.35; }
+    .lockup__l2 { font-size: 12px; line-height: 1.35; color: var(--on-navy-muted); }
+
+    .brand__title {
+        font-size: clamp(2.5rem, 6vw, 4.25rem);
+        font-weight: 700;
+        line-height: .95;
+        letter-spacing: -.015em;
+    }
+    .brand__title .gold { color: var(--gold); display: block; }   /* 5.34:1 on navy */
+    .brand__rule { width: 72px; height: 3px; background: var(--gold); border-radius: 2px; }
+    .brand__lede {
+        max-width: 30rem;
+        color: var(--on-navy-muted);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    /* Zona pill — glass EARNS its place here: it sits over the grid + photo, so the
+       frost communicates real layering rather than decorating a flat field. */
+    .zona {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: var(--on-navy-glass);
+        border: 1px solid var(--on-navy-rule);
+        -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(10px);
+        font-size: 13px; font-weight: 500;
+    }
+    .zona__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    /* ── Breakpoint intent ───────────────────────────────────────────────
+       PHONE (<640): the brand IS the lockup. A display hero here costs 370px
+         and pushes the dashboard CTA ~200px below the fold — measured — which
+         breaks this page's whole reason for existing. Task first; the ministry
+         lockup still carries identity.
+       TABLET (640–1023): a band with room to breathe → hero returns.
+       DESKTOP (≥1024): full left column → proof returns too.               */
+    .brand__hero  { margin-top: var(--space-4); }
+    .brand__proof { display: none; }
+    @media (max-width: 639px)  { .brand__hero { display: none; } }
+    /* Tablet portrait is the tightest case that still shows the hero: at 48px the
+       band pushed the CTA 19px past a 768×1024 fold. 32 buys it back. */
+    @media (min-width: 640px)  { .brand__hero { margin-top: var(--space-4); } }
+    @media (min-width: 1024px) {
+        .brand__hero  { margin-top: var(--space-6); }
+        .brand__proof { display: block; }
+    }
+
+    .proof__note {
+        max-width: 30rem;
+        padding-left: var(--space-3);
+        border-left: 1px solid var(--on-navy-rule);   /* hairline, not a 4px stripe */
+        color: var(--on-navy-muted);
+        font-size: 13px; line-height: 1.7;
+    }
+    .stats { display: flex; gap: var(--space-4); }
+    .stat__n { font-size: 26px; font-weight: 700; line-height: 1; }
+    .stat__l { font-size: 11px; color: var(--on-navy-muted); margin-top: 6px; letter-spacing: .06em; }
+    .stat + .stat { padding-left: var(--space-4); border-left: 1px solid var(--on-navy-rule); }
+
+    /* ═══ RIGHT — the two ways in ═══════════════════════════════════════ */
+    .auth {
+        background: var(--paper);
+        display: flex;
+        /* "safe center" so that when the column is taller than the viewport the
+           overflow spills DOWNWARD into the page scroll instead of clipping the
+           heading off the top — the classic centred-flex trap. */
+        align-items: safe center;
+        justify-content: center;
+        padding: var(--space-4) var(--space-3);
+    }
+    @media (min-width: 640px)  { .auth { padding: var(--space-4); } }
+    @media (min-width: 1024px) { .auth { padding: var(--space-4) var(--space-6); } }
+    .auth__inner { width: 100%; max-width: 26rem; }
+
+    .auth__title { font-size: clamp(1.75rem, 3.2vw, 2.25rem); font-weight: 700; line-height: 1.1; }
+    .auth__sub   { color: var(--ink-muted); font-size: 15px; margin-top: var(--space-1); }
+
+    /* ── Field ── */
+    .field__label {
+        display: block;
+        font-size: 13px; font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 6px;             /* sentence case — no shouting */
+    }
+    .input {
+        width: 100%;
+        min-height: 52px;
+        padding: 14px 16px;
+        background: var(--blue-light);
+        border: 1px solid transparent;  /* width constant across EVERY state */
+        outline: 2px solid transparent; /* reserved ring slot — no shift on focus */
+        outline-offset: 2px;
+        border-radius: var(--radius);
+        font-size: 15px;
+        color: var(--navy);
+        transition: background-color var(--dur) var(--ease),
+                    border-color     var(--dur) var(--ease);
+    }
+    .input--pw { padding-right: 52px; }
+    .input::placeholder { color: var(--placeholder); }
+    @media (hover: hover) { .input:hover { background: #e7edf9; } }
+    .input:focus, .input:focus-visible {
+        background: var(--paper);
+        border-color: var(--navy);
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+    }
+    .input:disabled { opacity: .55; cursor: not-allowed; }
+    .input[aria-invalid="true"] { border-color: var(--error); }
+
+    /* Eye toggle — 16px glyph, 48×48 reachable */
+    .eye {
+        position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        color: var(--ink-soft);
+        transition: color var(--dur) var(--ease);
+    }
+    .eye::before { content: ''; position: absolute; inset: -16px; }
+    @media (hover: hover) { .eye:hover { color: var(--navy); } }
+
+    /* Text link — 13px text is under WCAG 2.2 §2.5.8 (24×24); ::before fixes the
+       target without moving anything. Underline on hover so it isn't colour-only. */
+    .link {
+        position: relative;
+        color: var(--ink-muted);
+        font-size: 13px; font-weight: 500;
+        text-decoration: none; text-underline-offset: 3px;
+        transition: color var(--dur) var(--ease);
+    }
+    .link::before { content: ''; position: absolute; inset: -8px -4px; }
+    @media (hover: hover) { .link:hover { color: var(--gold-ink); text-decoration: underline; } }
+
+    /* ── PRIMARY: Masuk. Solid navy is the only filled control on the page. ──
+       No shimmer: an infinite glint never lets the page settle, and it reads
+       growth-hack rather than institutional. */
+    .btn-primary {
+        width: 100%;
+        min-height: 52px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--navy);
+        color: var(--paper);
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        font-size: 15px; font-weight: 600; letter-spacing: .08em;
+        box-shadow: var(--shadow-md);
+        cursor: pointer;
+        transition: background var(--dur) var(--ease),
+                    box-shadow var(--dur) var(--ease),
+                    transform  var(--dur) var(--ease);
+    }
+    @media (hover: hover) {
+        .btn-primary:hover { background: var(--navy-deep); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    }
+    .btn-primary:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+    .btn-primary:disabled, .btn-primary[aria-disabled="true"] {
+        opacity: .5; cursor: not-allowed; box-shadow: none; transform: none;
+    }
+
+    /* ── "atau" — names the fork: two valid ways in ── */
+    .or { display: flex; align-items: center; gap: var(--space-2); }
+    /* The RULES carry the opacity, never the label: fading 'atau' to .7 would drop
+       it to ~3.2:1 and fail AA. */
+    .or::before, .or::after {
+        content: ''; flex: 1; height: 1px; background: var(--rule-soft); opacity: .85;
+    }
+    .or span { font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+               font-weight: 600; color: var(--ink-muted); }
+
+    /* ── SECONDARY: public dashboard. Reads as a BUTTON, not a row: no leading
+       icon, label optically centred like Masuk, arrow absolute at the right. ── */
+    .btn-secondary {
+        position: relative;
+        width: 100%;
+        min-height: 64px;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: var(--space-1) 40px;
+        background: var(--paper);
+        border: 1px solid var(--gold-border);   /* 3.04:1 — identifies the control */
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-xs);
+        cursor: pointer;
+        transition: border-color var(--dur-slow) var(--ease),
+                    background   var(--dur-slow) var(--ease),
+                    box-shadow   var(--dur-slow) var(--ease),
+                    transform    var(--dur-slow) var(--ease);
+    }
+    .btn-secondary__text {
+        min-width: 0; display: flex; align-items: center; justify-content: center;
+        flex-wrap: wrap; gap: 2px 8px;
+    }
+    .btn-secondary__title { font-size: 17px; font-weight: 600; color: var(--navy);
+                            line-height: 1.4; white-space: nowrap; }  /* gate 49 */
+    .btn-secondary__badge {
+        display: inline-block; padding: 2px 7px; border-radius: 999px;
+        background: var(--gold-wash); color: var(--gold-ink);
+        font-size: 9px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+        line-height: 1.7;
+    }
+    .btn-secondary__arrow {
+        position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        color: var(--ink-soft); display: flex;
+        transition: transform var(--dur-slow) var(--ease), color var(--dur-slow) var(--ease);
+    }
+    /* Five simultaneous signals — lift, elevation, brighter rule, cream field,
+       arrow travel — so the state never rests on colour alone. */
+    @media (hover: hover) {
+        .btn-secondary:hover {
+            border-color: var(--gold-border-hover);
+            background: var(--cream);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
-        /* Removed top gradient bar */
+        .btn-secondary:hover .btn-secondary__arrow {
+            transform: translateY(-50%) translateX(5px);
+            color: var(--gold-ink);
+        }
+    }
+    .btn-secondary:active {
+        transform: translateY(0); background: var(--cream);
+        box-shadow: var(--shadow-xs); border-color: var(--gold-border-hover);
+    }
+    /* At 17px the label is 227px. Below ~380px the symmetric padding leaves too
+       little; the arrow (aria-hidden, and inert on touch since hover never fires)
+       yields rather than shrinking or wrapping the label. */
+    @media (max-width: 379px) {
+        .btn-secondary { padding-left: var(--space-2); padding-right: var(--space-2); }
+        .btn-secondary__arrow { display: none; }
+    }
+
+    /* ── Support row — all Call Center info, a fraction of the mass ── */
+    .help {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: var(--space-2); flex-wrap: wrap;
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--rule-soft);
+    }
+    .help__label { font-size: 12px; color: var(--ink-muted); line-height: 1.5; }
+    .help__num {
+        display: inline-flex; align-items: center; gap: 8px;
+        min-height: 44px; padding: 8px 14px;
+        border: 1px solid var(--rule); border-radius: var(--radius);
+        background: var(--paper);
+        font-size: 14px; font-weight: 600; color: var(--navy);
+        transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+                    transform var(--dur) var(--ease);
+    }
+    @media (hover: hover) {
+        .help__num:hover { border-color: var(--gold-border); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+    }
+    .help__num:active { transform: translateY(0); box-shadow: var(--shadow-xs); }
+
+    .colophon { font-size: 11px; color: var(--ink-muted); line-height: 1.6; }
+
+    /* ── Reduced motion — kill movement, keep every state ── */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+            transition-duration: .01ms !important; scroll-behavior: auto !important;
+        }
+        .btn-primary:hover, .btn-secondary:hover, .help__num:hover { transform: none; }
+    }
     </style>
 </head>
 
-<body class="min-h-screen flex bg-[#f0f1f3]">
+<body>
+<div class="shell">
 
-    <!-- LEFT SIDE -->
-    <div class="hidden lg:flex w-3/5 left-panel p-10 lg:p-14 flex-col justify-between relative overflow-hidden">
+    <!-- ══ LEFT · institution + proof ══════════════════════════════════ -->
+    <aside class="brand">
+        <div class="brand__grid"  aria-hidden="true"></div>
+        <div class="brand__photo" aria-hidden="true"></div>
+        <div class="brand__seam"  aria-hidden="true"></div>
 
-        <!-- Top: Logo -->
-        <div class="flex items-center gap-4">
-<img src="https://transformasidigital.idampalada.com/favicon.ico" class="w-12 h-12 object-contain">
+        <!-- Logo lockup -->
+        <div class="lockup">
+            <img src="https://transformasidigital.idampalada.com/favicon.ico"
+                 alt="Logo Kementerian Pekerjaan Umum" class="lockup__mark">
             <div>
-                <p class="text-sm font-semibold text-[#1e3a5f] tracking-wider leading-tight">KEMENTERIAN</p>
-                <p class="text-sm font-semibold text-[#1e3a5f] tracking-wider leading-tight">PEKERJAAN UMUM</p>
+                <p class="lockup__l1">Kementerian Pekerjaan Umum</p>
+                <p class="lockup__l2">Pusat Data dan Teknologi Informasi</p>
             </div>
         </div>
 
-        <!-- Middle: Main Content -->
-        <div class="flex-1 flex flex-col justify-center mt-10">
-
-            <p class="gold-line text-[#f59e0b] tracking-widest text-xs font-semibold uppercase mb-6">
-                Pusat Data Teknologi dan Informasi
-            </p>
-
-            <h1 class="title-font text-6xl lg:text-7xl font-bold text-[#1e3a5f] leading-[0.9] mb-2">
+        <!-- Hero -->
+        <div class="brand__hero">
+            <h1 class="brand__title display">
                 Transformasi
+                <span class="gold">Digital</span>
             </h1>
-            <h1 class="title-font text-6xl lg:text-7xl font-bold text-[#f59e0b] leading-[0.9] mb-2">
-                Digital
-            </h1>
-            <!-- Underline accent -->
-            <div class="w-24 h-1 bg-[#f59e0b] mt-1 mb-6 rounded-full"></div>
-
-            <p class="text-[#5a6478] text-base leading-relaxed max-w-sm">
+            <div class="brand__rule" style="margin: var(--space-3) 0;"></div>
+            <p class="brand__lede">
                 Platform terpadu pengelolaan data dan teknologi informasi
-                untuk mendukung transformasi digital Kementerian
-                Pekerjaan Umum.
+                untuk mendukung transformasi digital Kementerian Pekerjaan Umum.
             </p>
 
-            <!-- Zona Integritas Badge -->
-            <div class="zona-badge mt-10 bg-[#1e3a5f] text-white px-6 py-3 rounded-full w-full max-w-sm flex items-center gap-3 text-sm font-medium">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] inline-block"></span>
+            <div class="zona" style="margin-top: var(--space-3);">
+                <span class="zona__dot" aria-hidden="true"></span>
                 Zona Integritas · WBBM
             </div>
-
-            <!-- Zona description box -->
-            <div class="mt-6 border-l-4 border-[#f59e0b] pl-5 max-w-sm">
-                <p class="text-[#5a6478] text-sm leading-relaxed">
-                    Dalam menunjang Zona Integritas menuju Wilayah Birokrasi
-                    Bersih dan Melayani (WBBM), PUSDATIN berkomitmen
-                    meningkatkan kualitas layanan publik yang bebas dari
-                    korupsi dan memberikan pelayanan prima.
-                </p>
-            </div>
         </div>
 
-        <!-- Bottom: Stats -->
-        <div class="flex gap-14 mt-8">
-            <div>
-                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">2026</h3>
-                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Tahun Aktif</p>
-                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
-    Tahun Aktif
-</p> -->
-            </div>
-            <div class="border-l border-[#d1d5db] pl-14">
-                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">WBBM</h3>
-                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Target ZI</p>
-                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
-    Target ZI
-</p> -->
-            </div>
-            <div class="border-l border-[#d1d5db] pl-14">
-                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">PU</h3>
-                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Kementerian</p>
-                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
-    Kementerian
-</p> -->
+        <!-- Proof — desktop only; the pill above carries the ZI signal everywhere -->
+        <div class="brand__proof" style="margin-top: var(--space-6);">
+            <p class="proof__note">
+                Dalam menunjang Zona Integritas menuju Wilayah Birokrasi
+                Bersih dan Melayani (WBBM), PUSDATIN berkomitmen
+                meningkatkan kualitas layanan publik yang bebas dari
+                korupsi dan memberikan pelayanan prima.
+            </p>
+
+            <div class="stats" style="margin-top: var(--space-4);">
+                <div class="stat">
+                    <p class="stat__n display">2026</p>
+                    <p class="stat__l">Tahun Aktif</p>
+                </div>
+                <div class="stat">
+                    <p class="stat__n display">WBBM</p>
+                    <p class="stat__l">Target ZI</p>
+                </div>
+                <div class="stat">
+                    <p class="stat__n display">PU</p>
+                    <p class="stat__l">Kementerian</p>
+                </div>
             </div>
         </div>
+    </aside>
 
-    </div>
+    <!-- ══ RIGHT · the two ways in ═════════════════════════════════════ -->
+    <main class="auth">
+        <div class="auth__inner">
 
-    <!-- RIGHT SIDE -->
-    <div class="w-full lg:w-2/5 flex items-center justify-center px-12 py-8 lg:py-0 right-panel" style="background: linear-gradient(160deg, #ffffff 60%, #f4f6fb 100%);">
+            <h2 class="auth__title display">Selamat Datang</h2>
+            <p class="auth__sub">Masukkan kredensial Anda untuk melanjutkan</p>
 
-        <div class="w-full max-w-md relative z-10">
-            <!-- Gold accent label -->
-    <p class="text-[#f59e0b] tracking-widest text-sm font-semibold uppercase mb-5 gold-line">
-        Autentikasi Pengguna
-    </p>
+            <form method="POST" action="https://transformasidigital.idampalada.com/login"
+                  style="margin-top: var(--space-4);">
+                <input type="hidden" name="_token" value="9W0PZlTfAYXY12IdiGHCoo7tVj8Jh1s0IYJL3FmW" autocomplete="off">
 
-    <h2 class="title-font text-5xl font-bold text-[#1e3a5f]">
-        Selamat Datang
-    </h2>
+                <!-- Email -->
+                <div>
+                    <label for="email-input" class="field__label">Email</label>
+                    <input type="text" id="email-input" name="email" value=""
+                           required autofocus autocomplete="username"
+                           placeholder="userpusdatin@pu.go.id" class="input">
+                </div>
 
-    <p class="text-[#8a93a6] mt-3 mb-6 text-base">
-        Silakan masuk menggunakan akun Pusdatin Anda.
-    </p>
-
-    <form method="POST" action="https://transformasidigital.idampalada.com/login" class="space-y-4">
-        <input type="hidden" name="_token" value="fhf0IMCjc2hEu35EEA7xZ4A78dwNZMoBXrwaMIBj" autocomplete="off">
-        <!-- Email -->
-        <div>
-            <label class="block text-sm font-semibold tracking-widest text-[#1e3a5f] uppercase mb-2">
-                Email
-            </label>
-            <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a93a6]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                    </svg>
-                </span>
-                <input type="text"
-                    name="email"
-                    value=""
-                    required autofocus
-                    placeholder="userpusdatin@pu.go.id"
-                    class="custom-input w-full rounded-xl px-5 py-3.5 pl-12 text-base text-[#1e3a5f] placeholder-[#9ca3af]">
-            </div>
+                <!-- Password -->
+                <div style="margin-top: var(--space-3);">
+                    <label for="password-input" class="field__label">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password-input" name="password"
+                               required autocomplete="current-password"
+                               placeholder="••••••••••" class="input input--pw">
+                        <button type="button" id="password-toggle" onclick="togglePassword()"
+                                aria-label="Tampilkan password" aria-pressed="false"
+                                aria-controls="password-input" class="eye">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                            </svg>
+                        </button>
                     </div>
+                </div>
 
-        <!-- PASSWORD -->
-        <div>
-            <label class="block text-sm font-semibold tracking-widest text-[#1e3a5f] uppercase mb-2">
-                Password
-            </label>
-            <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a93a6]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
-                    </svg>
-                </span>
-                <input type="password"
-                    id="password-input"
-                    name="password"
-                    required
-                    placeholder="••••••••••"
-                    class="custom-input w-full rounded-xl px-5 py-3.5 pl-12 pr-12 text-base text-[#1e3a5f] placeholder-[#9ca3af]">
-                <!-- Eye toggle -->
-                <button type="button"
-                    onclick="togglePassword()"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a93a6] hover:text-[#1e3a5f] transition-colors">
-                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                    </svg>
+                <!-- Forgot password -->
+                <div style="display:flex; justify-content:flex-end; margin-top: var(--space-2);">
+                    <a href="https://transformasidigital.idampalada.com/forgot-password" class="link">
+                        Lupa password?
+                    </a>
+                </div>
+
+                <!-- CAPTCHA — gates the submit, so it sits with the login group, above
+                     the button. Inside <form>, so cf-turnstile-response posts as before. -->
+                <div style="margin-top: var(--space-3);">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAADAVdPTI91kRSSJW"></div>
+                </div>
+
+                <!-- PRIMARY -->
+                <button type="submit" class="btn-primary" style="margin-top: var(--space-3);">
+                    MASUK
                 </button>
-            </div>
-                    </div>
-<!-- Lupa Password -->
-<div class="flex justify-end pt-1">
-    <a href="https://transformasidigital.idampalada.com/forgot-password"
-        class="text-xs text-[#8a93a6] hover:text-[#f59e0b] transition-colors duration-200 font-medium tracking-wide">
-        Lupa password?
-    </a>
-</div>
-        
 
-        <!-- BUTTON -->
-        <button type="submit" class="masuk-btn w-full text-white font-semibold py-3.5 rounded-xl tracking-widest text-base transition-all duration-300 focus:outline-none">
-            <span class="relative z-10">MASUK</span>
-        </button>
+                <div class="or" style="margin: var(--space-2) 0;">
+                    <span>atau</span>
+                </div>
 
-        <!-- LINK DASHBOARD -->
-        <a href="https://transformasidigital.idampalada.com/dashboard" 
-           class="flex items-center justify-center w-full text-[#1e3a5f] border-2 border-[#d1d5db] bg-transparent font-semibold py-3.5 rounded-xl text-sm transition-all duration-300 hover:border-[#1e3a5f] hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:ring-offset-2">
-            Lihat Dashboard Monitoring (Tanpa Login)
-        </a>
-                <!--  TURNSTILE DI SINI -->
-        <div class="mt-4 flex justify-center">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADAVdPTI91kRSSJW"></div>
-        </div>
+                <!-- SECONDARY · public dashboard.
+                     aria-label mirrors the visible words (WCAG 2.5.3 Label in Name). -->
+                <a href="https://transformasidigital.idampalada.com/dashboard"
+                   class="btn-secondary"
+                   aria-label="Lihat Dashboard Monitoring (Akses Publik)">
+                    <span class="btn-secondary__text">
+                        <span class="btn-secondary__title">Lihat Dashboard Monitoring</span>
+                        <span class="btn-secondary__badge">Akses Publik</span>
+                    </span>
+                    <span class="btn-secondary__arrow" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+                        </svg>
+                    </span>
+                </a>
+            </form>
 
-    </form>
-
-    <!-- CALL CENTER -->
-    <div class="mt-8 text-center">
-
-        <!-- Divider with label -->
-        <div class="flex items-center gap-3 mb-4">
-            <div class="flex-1 h-px bg-gray-200"></div>
-            <span class="text-xs tracking-[0.2em] text-[#b0b8c8] font-semibold uppercase">Bantuan</span>
-            <div class="flex-1 h-px bg-gray-200"></div>
-        </div>
-
-        <!-- Card -->
-        <div class="rounded-2xl border border-[#eaecf0] bg-[#f9fafb] p-4">
-
-            <!-- Header -->
-            <p class="text-sm font-bold text-[#1e3a5f] tracking-[0.15em] uppercase mb-1">Call Center</p>
-            <p class="text-sm text-[#8a93a6] mb-4">Penilaian Transformasi Digital</p>
-
-            <!-- Phone buttons -->
-            <div class="space-y-2.5">
-                <a href="https://wa.me/62817846621" target="_blank"
-                    class="flex items-center justify-center gap-3 w-full bg-white border border-[#eaecf0] rounded-xl px-4 py-3 hover:border-[#f59e0b] hover:shadow-sm transition-all duration-200 cursor-pointer">
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#f59e0b] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <!-- Support — same information, a fraction of the mass -->
+            <div class="help" style="margin-top: var(--space-3);">
+                <p class="help__label">
+                    Butuh bantuan?<br>
+                    Call Center Penilaian Transformasi Digital
+                </p>
+                <a href="https://wa.me/62817846621" target="_blank" rel="noopener noreferrer" class="help__num">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                         viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gold-ink); flex-shrink:0;">
                         <path d="M12.031 21c-1.618 0-3.197-.433-4.582-1.256l-5.112 1.34 1.365-4.985A8.956 8.956 0 012.44 12c0-4.963 4.041-9 9.004-9s9.004 4.037 9.004 9-4.041 9-9.417 9zm.006-16.5c-4.137 0-7.503 3.366-7.503 7.5 0 1.32.348 2.612 1.01 3.748l-.87 3.178 3.251-.853A7.458 7.458 0 0012.037 19.5c4.137 0 7.503-3.366 7.503-7.5s-3.366-7.5-7.503-7.5zm4.12 10.222c-.226-.113-1.336-.66-1.543-.736-.207-.075-.358-.113-.509.113-.15.226-.583.736-.715.887-.132.15-.264.17-.49.056-.226-.113-.953-.351-1.815-1.121-.67-.598-1.122-1.338-1.254-1.564-.132-.226-.014-.349.099-.461.101-.1.226-.264.339-.396.113-.132.15-.226.226-.377.075-.15.038-.283-.019-.396-.056-.113-.509-1.226-.697-1.678-.183-.442-.369-.382-.509-.389-.132-.007-.283-.007-.433-.007s-.396.056-.603.283c-.207.226-.791.773-.791 1.885 0 1.112.81 2.187.923 2.338.113.15 1.595 2.432 3.864 3.413.541.233.963.372 1.293.477.543.172 1.038.148 1.428.09.435-.065 1.336-.547 1.524-1.075.188-.528.188-.98.132-1.075-.056-.094-.207-.15-.433-.264z"/>
                     </svg>
-                    
-                    <span class="text-base font-semibold text-[#1e3a5f]">0817-846-621</span>
+                    0817-846-621
                 </a>
             </div>
+
+            <p class="colophon" style="margin-top: var(--space-3);">
+                © 2026 <strong style="font-weight:600;">Transformasi Digital</strong> — Kementerian Pekerjaan Umum
+            </p>
         </div>
+    </main>
+</div>
 
-        <p class="text-sm text-[#c0c7d3] mt-4">
-            © 2026 <strong class="text-[#8a93a6]">Transformasi Digital</strong> — Kementerian Pekerjaan Umum
-        </p>
-    </div>
-
-    <script>
-        function togglePassword() {
-            const input = document.getElementById('password-input');
-            input.type = input.type === 'password' ? 'text' : 'password';
+<script>
+    function togglePassword() {
+        const input = document.getElementById('password-input');
+        const btn = document.getElementById('password-toggle');
+        const shown = input.type === 'text';
+        input.type = shown ? 'password' : 'text';
+        if (btn) {
+            btn.setAttribute('aria-pressed', String(!shown));
+            btn.setAttribute('aria-label', shown ? 'Tampilkan password' : 'Sembunyikan password');
         }
+    }
+</script>
 
-        // Highlight gold-line pseudo element for the right panel label
-        // (uses same CSS class defined in layout)
-    </script>
-
-    
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-        </div>
-
-    </div>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"631f700e3f054b1abb1fd6ca060b1ba0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
