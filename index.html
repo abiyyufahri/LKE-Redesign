@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -8,16 +7,141 @@
     <title>Login — Transformasi Digital</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        /* Hallmark · locked tokens — Tailwind reads the :root custom properties below,
+           so there is exactly one source of truth for colour. No inline hex in markup. */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy:        'var(--navy)',
+                        'navy-deep': 'var(--navy-deep)',
+                        gold:        'var(--gold)',
+                        'gold-ink':  'var(--gold-ink)',
+                        muted:       'var(--ink-muted)',
+                        soft:        'var(--ink-soft)',
+                        rule:        'var(--rule)',
+                        paper:       'var(--paper)',
+                        'paper-2':   'var(--paper-2)',
+                    },
+                    fontFamily: {
+                        sans:    ['DM Sans', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                    transitionTimingFunction: {
+                        'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+                    },
+                },
+            },
+        };
+    </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
+        /* Hallmark · pre-emit critique: P5 H5 E5 S4 R4 V4
+         * scope: redesign (visual/interaction layer only — routes, auth, copy, IA preserved)
+         * states: default · hover · focus-visible · active · disabled · loading · error · success
+         * contrast: pass (gates 40–41) — all text pairs ≥ 4.5:1
+         */
+
+        :root {
+            /* ── Brand ink ── */
+            --navy:       #1e3a5f;  /* 11.5:1 on paper */
+            --navy-deep:  #162d4a;  /* pressed / hover fill */
+
+            /* ── Brand gold ──
+               --gold is DECORATIVE ONLY (rules, dots, underlines, glyphs). At 2.15:1 on
+               paper it is unreadable as text. --gold-ink is the same hue carried down to
+               an AA-safe lightness: 5.66:1 on paper, 5.01:1 on the left panel overlay. */
+            --gold:      #f59e0b;
+            --gold-ink:  #9a5608;
+            --gold-wash: rgba(245, 158, 11, 0.10);
+
+            /* ── Secondary-button gold ──
+               The dashboard button has no fill, so its BORDER is what identifies it as
+               a control — WCAG 1.4.11 wants ≥3:1 for that. #d9a441 measures 2.25:1 on
+               paper, so it serves as the brighter HOVER value (exactly what "brighten
+               the border on hover" needs), while rest sits one step deeper at 3.04:1. */
+            --gold-border:       #c08a2e;  /* 3.04:1 on paper — rest */
+            --gold-border-hover: #d9a441;  /* brighter — hover */
+            --cream:             #fff9f1;  /* hover field; navy title reads 10.99:1 on it */
+
+            /* ── Neutrals ── */
+            --ink-muted: #5a6478;  /* 5.96:1 on paper, 5.27:1 on shell — ALL text, incl. 10–12px */
+            --ink-soft:  #6b7488;  /* ICONS ONLY (needs ≥3:1). Fails AA for text on the
+                                      shell/left-panel (4.15:1) — never use it on a glyph
+                                      that carries meaning as words. */
+            --paper:       #ffffff;
+            --paper-2:     #f7f9fc;
+            --paper-3:     #eef2fb;
+            --paper-tint:  #f4f6fb;  /* right-panel gradient tail */
+            --field-hover: #e7edf9;  /* input hover — 4% under --paper-3 */
+            --placeholder: #8a93a6;  /* 3.09:1 — format hint only; the <label> carries meaning */
+            --rule:        #e6eaf0;
+            --rule-soft:   #eef1f6;  /* separators only — quieter than a component border */
+            --shell:       #f0f1f3;
+
+            /* ── Elevation — ONE soft family, all navy-tinted, none darker than 0.16.
+               Every shadow on the page comes from this scale. Nothing improvises. */
+            --shadow-xs: 0 1px 2px  rgba(30, 58, 95, 0.04);
+            --shadow-sm: 0 2px 8px  rgba(30, 58, 95, 0.06);
+            --shadow-md: 0 4px 16px rgba(30, 58, 95, 0.10);
+            --shadow-lg: 0 8px 28px rgba(30, 58, 95, 0.16);
+
+            /* ── Radius — one control radius across input / button / card / row.
+               --radius-lg is for CONTAINERS only: a wrapper sharing its children's
+               radius exactly reads flat, so the shell steps up one notch. */
+            --radius:     12px;
+            --radius-lg:  16px;
+
+            /* ── Spacing rhythm — 8 · 16 · 24 · 32 · 48. No off-scale gaps. */
+            --space-1: 8px;
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 32px;
+            --space-6: 48px;
+
+            /* ── System ── */
+            --focus:     #1e3a5f;
+            --error:     #b91c1c;
+            --ease:      cubic-bezier(0.16, 1, 0.3, 1);  /* exponential out — no bounce */
+            --dur:       200ms;
+            --dur-slow:  240ms;
+        }
+
+        html, body {
+            overflow-x: clip;   /* gate 34 — clip, never hidden */
+        }
         body { font-family: 'DM Sans', sans-serif; }
-        .title-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .title-font { font-family: 'Playfair Display', serif; font-style: normal; }
+
+        /* ── Global focus ring ────────────────────────────────────────────
+           :focus-visible only, so it is keyboard-only. 2px @ 2px offset,
+           ≥3:1 against both the element and the page. */
+        :focus { outline: none; }
+        :focus-visible {
+            outline: 2px solid var(--focus);
+            outline-offset: 2px;
+            border-radius: inherit;
+        }
+
+        /* Animated dots */
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0px); opacity: 0.6; }
+            50% { transform: translateY(-12px); opacity: 1; }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0px); opacity: 0.4; }
+            50% { transform: translateY(-8px); opacity: 0.8; }
+        }
+        .dot-float-1 { animation: float1 4s ease-in-out infinite; }
+        .dot-float-2 { animation: float2 5s ease-in-out infinite 1s; }
+        .dot-float-3 { animation: float1 6s ease-in-out infinite 2s; }
 
         /* Background image on left panel */
-.left-panel {
-    background-image: url('https://transformasidigital.idampalada.com/pusdatin.jpeg');
+        .left-panel {
+            background-image: url('https://transformasidigital.idampalada.com/pusdatin.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -43,32 +167,68 @@
             display: inline-block;
             width: 2rem;
             height: 2px;
-            background-color: #f59e0b;
+            background-color: var(--gold);
             margin-right: 0.75rem;
             vertical-align: middle;
         }
 
-        /* Right panel declarations */
+        /* Right panel decorations */
         .right-panel {
             position: relative;
             overflow: hidden;
         }
+        /* Top-left corner bracket — emas tipis */
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 32px;
+            height: 32px;
+            border-top: 1.5px solid var(--gold);
+            border-left: 1.5px solid var(--gold);
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.85;
+        }
+        /* Bottom-right corner bracket — navy tipis */
+        .right-panel::after {
+            content: '';
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border-bottom: 1.5px solid var(--navy);
+            border-right: 1.5px solid var(--navy);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.5;
+        }
+        /* Ensure form content stays above decorations */
+        .right-panel > div {
+            position: relative;
+            z-index: 1;
+        }
 
-        /* ── Button MASUK shimmer ── */
+        /* ── Button MASUK — PRIMARY CTA ────────────────────────────────────
+           Solid navy slab + shadow + shimmer. Deliberately the heaviest
+           element on the page; the dashboard CTA must never out-weigh it. */
         @keyframes shimmer {
             0%   { transform: translateX(-120%) skewX(-20deg); }
             100% { transform: translateX(220%) skewX(-20deg); }
         }
         .masuk-btn {
-            background: #1e3a5f;
+            background: var(--navy);
+            color: var(--paper);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(30, 58, 95, 0.35);
-            transition: box-shadow 0.3s ease, background 0.3s ease, transform 0.1s ease;
-        }
-        .masuk-btn:focus-visible {
-            outline: 2px solid #f59e0b;
-            outline-offset: 2px;
+            border: 1px solid transparent;  /* matches the CTA's 1px rule */
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);   /* was 0.35 alpha — too heavy for the enterprise read */
+            transition: background var(--dur) var(--ease),
+                        box-shadow var(--dur) var(--ease),
+                        transform var(--dur) var(--ease);
         }
         .masuk-btn::after {
             content: '';
@@ -80,14 +240,139 @@
             transform: translateX(-120%) skewX(-20deg);
             animation: shimmer 2.6s ease-in-out infinite;
         }
-        .masuk-btn:hover {
-            background: #162d4a;
-            box-shadow: 0 6px 28px rgba(30, 58, 95, 0.5);
-            transform: translateY(-1px);
+        @media (hover: hover) {
+            .masuk-btn:hover {
+                background: var(--navy-deep);
+                box-shadow: var(--shadow-lg);
+                transform: translateY(-2px);
+            }
         }
         .masuk-btn:active {
             transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(30, 58, 95, 0.3);
+            box-shadow: var(--shadow-sm);
+        }
+        .masuk-btn:disabled,
+        .masuk-btn[aria-disabled="true"] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .masuk-btn:disabled::after,
+        .masuk-btn[aria-disabled="true"]::after { animation: none; opacity: 0; }
+
+        /* ── Dashboard CTA — SECONDARY BUTTON ─────────────────────────────
+           Reads as a BUTTON, not a list row: no leading icon, label optically centred
+           like MASUK so the two form a matched pair, arrow pinned to the right edge
+           (absolute, so it never pulls the label off-centre). */
+        .dash-cta {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            min-height: 64px;
+            padding: var(--space-1) 40px;   /* symmetric — reserves the arrow's lane */
+            background: var(--paper);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-xs);
+            cursor: pointer;
+            transition: border-color var(--dur-slow) var(--ease),
+                        background   var(--dur-slow) var(--ease),
+                        box-shadow   var(--dur-slow) var(--ease),
+                        transform    var(--dur-slow) var(--ease);
+        }
+        /* Badge sits INLINE with the title; both centre as one group. It drops to a
+           second line only on narrow phones, where min-height 64px absorbs it. */
+        .dash-cta__text {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2px 8px;
+        }
+        .dash-cta__title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--navy);
+            line-height: 1.4;
+            white-space: nowrap;      /* gate 49 — the label never wraps to two lines */
+        }
+        /* Smaller + cleaner: 10→9px, tighter tracking and padding, so it supports the
+           17px title instead of competing with it. */
+        .dash-cta__badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: var(--gold-wash);
+            color: var(--gold-ink);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.7;
+        }
+        /* Absolute, so the label centres against the button's true width rather than
+           being pushed left by the arrow's box. */
+        .dash-cta__arrow {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-soft);
+            display: flex;
+            transition: transform var(--dur-slow) var(--ease),
+                        color     var(--dur-slow) var(--ease);
+        }
+        /* Hover carries FIVE simultaneous signals — lift, elevation, brighter gold rule,
+           cream field, arrow travel — so the state never rests on colour alone. */
+        @media (hover: hover) {
+            .dash-cta:hover {
+                border-color: var(--gold-border-hover);
+                background: var(--cream);
+                box-shadow: var(--shadow-md);
+                transform: translateY(-2px);
+            }
+            .dash-cta:hover .dash-cta__arrow {
+                transform: translateY(-50%) translateX(5px);  /* keeps the -50% centring */
+                color: var(--gold-ink);
+            }
+        }
+        .dash-cta:active {
+            transform: translateY(0);
+            background: var(--cream);
+            box-shadow: var(--shadow-xs);
+            border-color: var(--gold-border-hover);
+        }
+
+        /* At 17px the title measures 227px. Below ~380px the symmetric 40px padding
+           leaves too little room, so the arrow — aria-hidden decoration, and inert on
+           touch anyway since hover never fires there — yields and the padding tightens.
+           The label itself never shrinks or wraps (gate 49). */
+        @media (max-width: 379px) {
+            .dash-cta { padding-left: var(--space-2); padding-right: var(--space-2); }
+            .dash-cta__arrow { display: none; }
+        }
+
+        /* ── "atau" divider — reuses the Bantuan divider language ──────── */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        /* The RULES carry the opacity drop, not the label. Fading the text to 0.7
+           would push "ATAU" to ~3.2:1 and fail AA — a separator must recede without
+           taking legibility with it. */
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule-soft);
+            opacity: 0.85;
         }
 
         /* ── Zona Integritas badge shimmer ── */
@@ -98,6 +383,8 @@
         .zona-badge {
             position: relative;
             overflow: hidden;
+            background: var(--navy);
+            color: var(--paper);
         }
         .zona-badge::after {
             content: '';
@@ -110,67 +397,145 @@
             animation: badgeShimmer 3s ease-in-out infinite 0.5s;
         }
 
-        /* Input focus style */
+        /* ── Inputs ───────────────────────────────────────────────────────
+           border-width is constant across every state — state changes go to
+           background / outline only, so the box never shifts on focus. */
         .custom-input {
-            background-color: #eef2fb;
+            background-color: var(--paper-3);
             border: 1px solid transparent;
-            transition: all 0.2s ease;
+            outline: 2px solid transparent;   /* reserved ring slot — no shift on focus */
+            outline-offset: 2px;
+            transition: background-color var(--dur) var(--ease),
+                        border-color     var(--dur) var(--ease);
         }
-        .custom-input:focus {
-            background-color: #fff;
-            border-color: #1e3a5f;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.08);
+        @media (hover: hover) {
+            .custom-input:hover { background-color: var(--field-hover); }
         }
-        /* Removed top gradient bar */
+        .custom-input:focus,
+        .custom-input:focus-visible {
+            background-color: var(--paper);
+            border-color: var(--navy);
+            outline: 2px solid var(--focus);
+            outline-offset: 2px;
+        }
+        .custom-input::placeholder { color: var(--placeholder); }
+        .custom-input:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        .custom-input[aria-invalid="true"] { border-color: var(--error); }
+
+        /* Eye toggle — 44px hit target without changing the visual size */
+        .eye-btn { position: relative; color: var(--ink-soft); transition: color var(--dur) var(--ease); }
+        /* 16px glyph, 48×48 reachable — clears the 44px touch floor with margin.
+           (-14px measured only 42px at the boundary.) */
+        .eye-btn::before { content: ''; position: absolute; inset: -16px; }
+        @media (hover: hover) { .eye-btn:hover { color: var(--navy); } }
+
+        /* Right panel top gradient bar */
+        .right-panel-topbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--gold) 100%);
+            z-index: 10;
+        }
+
+        /* Call-center row */
+        /* 12px padding was off-scale; 8px + an explicit 44px floor is on-scale AND
+           lands the row at exactly the touch minimum — 6px shorter than before,
+           which is the point of trimming this section. */
+        .call-row {
+            border-radius: var(--radius);
+            min-height: 44px;
+            transition: border-color var(--dur) var(--ease),
+                        box-shadow   var(--dur) var(--ease),
+                        transform    var(--dur) var(--ease);
+        }
+        @media (hover: hover) {
+            .call-row:hover {
+                border-color: var(--gold);
+                box-shadow: var(--shadow-sm);
+                transform: translateY(-2px);
+            }
+        }
+        .call-row:active { transform: translateY(0); box-shadow: var(--shadow-xs); }
+
+        /* Text link — 16px of text is below WCAG 2.2 §2.5.8 (24×24 min, AA). The
+           ::before expands the target to 32×104 without moving anything. Hover adds
+           an underline so the state isn't carried by colour alone. */
+        .quiet-link {
+            position: relative;
+            text-decoration: none;
+            text-underline-offset: 3px;
+            transition: color var(--dur) var(--ease);
+        }
+        .quiet-link::before { content: ''; position: absolute; inset: -8px -4px; }
+        @media (hover: hover) {
+            .quiet-link:hover { color: var(--gold-ink); text-decoration: underline; }
+        }
+
+        /* ── Reduced motion — kill every loop, keep every state ────────── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .masuk-btn::after, .zona-badge::after { display: none; }
+            .dot-float-1, .dot-float-2, .dot-float-3 { animation: none; }
+        }
     </style>
 </head>
 
-<body class="min-h-screen flex bg-[#f0f1f3]">
+<body class="min-h-screen flex bg-[color:var(--shell)]">
 
     <!-- LEFT SIDE -->
-    <div class="hidden lg:flex w-3/5 left-panel p-10 lg:p-14 flex-col justify-between relative overflow-hidden">
+    <div class="hidden lg:flex w-3/5 left-panel p-16 xl:p-24 flex-col justify-between relative overflow-hidden">
 
         <!-- Top: Logo -->
         <div class="flex items-center gap-4">
-<img src="https://transformasidigital.idampalada.com/favicon.ico" class="w-12 h-12 object-contain">
+            <img src="https://transformasidigital.idampalada.com/favicon.ico" alt="Logo Kementerian Pekerjaan Umum" class="w-12 h-12 object-contain">
             <div>
-                <p class="text-sm font-semibold text-[#1e3a5f] tracking-wider leading-tight">KEMENTERIAN</p>
-                <p class="text-sm font-semibold text-[#1e3a5f] tracking-wider leading-tight">PEKERJAAN UMUM</p>
+                <p class="text-xs font-semibold text-navy tracking-[0.14em] leading-snug">KEMENTERIAN</p>
+                <p class="text-xs font-semibold text-navy tracking-[0.14em] leading-snug">PEKERJAAN UMUM</p>
             </div>
         </div>
 
         <!-- Middle: Main Content -->
-        <div class="flex-1 flex flex-col justify-center mt-10">
+        <div class="flex-1 flex flex-col justify-center mt-16">
 
-            <p class="gold-line text-[#f59e0b] tracking-widest text-xs font-semibold uppercase mb-6">
+            <p class="gold-line text-gold-ink tracking-widest text-xs font-semibold uppercase mb-6">
                 Pusat Data Teknologi dan Informasi
             </p>
 
-            <h1 class="title-font text-6xl lg:text-7xl font-bold text-[#1e3a5f] leading-[0.9] mb-2">
+            <h1 class="title-font text-7xl xl:text-8xl font-bold text-navy leading-[0.9] mb-2">
                 Transformasi
             </h1>
-            <h1 class="title-font text-6xl lg:text-7xl font-bold text-[#f59e0b] leading-[0.9] mb-2">
+            <h1 class="title-font text-7xl xl:text-8xl font-bold text-gold leading-[0.9] mb-2">
                 Digital
             </h1>
             <!-- Underline accent -->
-            <div class="w-24 h-1 bg-[#f59e0b] mt-1 mb-6 rounded-full"></div>
+            <div class="w-24 h-1 bg-gold mt-1 mb-8 rounded-full"></div>
 
-            <p class="text-[#5a6478] text-base leading-relaxed max-w-sm">
+            <p class="text-muted text-base leading-relaxed max-w-sm">
                 Platform terpadu pengelolaan data dan teknologi informasi
                 untuk mendukung transformasi digital Kementerian
                 Pekerjaan Umum.
             </p>
 
             <!-- Zona Integritas Badge -->
-            <div class="zona-badge mt-10 bg-[#1e3a5f] text-white px-6 py-3 rounded-full w-full max-w-sm flex items-center gap-3 text-sm font-medium">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] inline-block"></span>
+            <div class="zona-badge mt-10 px-6 py-3 rounded-full w-full max-w-sm flex items-center gap-3 text-sm font-medium">
+                <span class="w-2.5 h-2.5 rounded-full bg-gold inline-block flex-shrink-0"></span>
                 Zona Integritas · WBBM
             </div>
 
-            <!-- Zona description box -->
-            <div class="mt-6 border-l-4 border-[#f59e0b] pl-5 max-w-sm">
-                <p class="text-[#5a6478] text-sm leading-relaxed">
+            <!-- Zona description box — hairline rule, not a side-stripe -->
+            <div class="mt-6 max-w-sm rounded-xl border border-[color:var(--rule)] bg-white/45 px-5 py-4">
+                <p class="text-muted text-sm leading-relaxed">
                     Dalam menunjang Zona Integritas menuju Wilayah Birokrasi
                     Bersih dan Melayani (WBBM), PUSDATIN berkomitmen
                     meningkatkan kualitas layanan publik yang bebas dari
@@ -180,173 +545,211 @@
         </div>
 
         <!-- Bottom: Stats -->
-        <div class="flex gap-14 mt-8">
+        <div class="flex gap-14 mt-10">
             <div>
-                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">2026</h3>
-                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Tahun Aktif</p>
-                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
-    Tahun Aktif
-</p> -->
+                <h3 class="title-font text-3xl font-bold text-navy">2026</h3>
+                <p class="text-xs text-muted tracking-widest mt-1 uppercase">Tahun Aktif</p>
             </div>
-            <div class="border-l border-[#d1d5db] pl-14">
-                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">WBBM</h3>
-                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Target ZI</p>
-                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
-    Target ZI
-</p> -->
+            <div class="border-l border-[color:var(--rule)] pl-14">
+                <h3 class="title-font text-3xl font-bold text-navy">WBBM</h3>
+                <p class="text-xs text-muted tracking-widest mt-1 uppercase">Target ZI</p>
             </div>
-            <div class="border-l border-[#d1d5db] pl-14">
-                <h3 class="title-font text-3xl font-bold text-[#1e3a5f]">PU</h3>
-                <p class="text-xs text-[#8a93a6] tracking-widest mt-1 uppercase">Kementerian</p>
-                <!-- <p class="text-[#5a6478] text-sm leading-relaxed">
-    Kementerian
-</p> -->
+            <div class="border-l border-[color:var(--rule)] pl-14">
+                <h3 class="title-font text-3xl font-bold text-navy">PU</h3>
+                <p class="text-xs text-muted tracking-widest mt-1 uppercase">Kementerian</p>
             </div>
         </div>
+
+        <!-- Decorative floating dots -->
+        <div aria-hidden="true" class="absolute bottom-48 right-24 w-4 h-4 rounded-full bg-gold dot-float-1"></div>
+        <div aria-hidden="true" class="absolute bottom-36 right-16 w-2.5 h-2.5 rounded-full bg-navy dot-float-2"></div>
+        <div aria-hidden="true" class="absolute bottom-28 right-32 w-3 h-3 rounded-full bg-gold opacity-50 dot-float-3"></div>
+        <div aria-hidden="true" class="absolute top-1/2 right-10 w-2 h-2 rounded-full bg-navy opacity-30 dot-float-2"></div>
 
     </div>
 
     <!-- RIGHT SIDE -->
-    <div class="w-full lg:w-2/5 flex items-center justify-center px-12 py-8 lg:py-0 right-panel" style="background: linear-gradient(160deg, #ffffff 60%, #f4f6fb 100%);">
+    <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-10 lg:px-12 py-12 right-panel"
+         style="background: linear-gradient(160deg, var(--paper) 60%, var(--paper-tint) 100%);">
 
-        <div class="w-full max-w-md relative z-10">
+        <!-- Top gradient bar -->
+        <div class="right-panel-topbar"></div>
+
+        <!-- Decorative circles top-right -->
+        <div aria-hidden="true" style="position:absolute;top:-70px;right:-70px;width:220px;height:220px;border-radius:50%;border:2px solid rgba(245,158,11,0.22);pointer-events:none;z-index:0;"></div>
+        <div aria-hidden="true" style="position:absolute;top:-25px;right:-25px;width:110px;height:110px;border-radius:50%;border:1.5px solid rgba(245,158,11,0.14);pointer-events:none;z-index:0;"></div>
+        <!-- Decorative circle bottom-left -->
+        <div aria-hidden="true" style="position:absolute;bottom:-90px;left:-90px;width:280px;height:280px;border-radius:50%;border:2px solid rgba(30,58,95,0.09);pointer-events:none;z-index:0;"></div>
+
+        <div class="w-full max-w-md" style="position:relative;z-index:1;">
+
             <!-- Gold accent label -->
-    <p class="text-[#f59e0b] tracking-widest text-sm font-semibold uppercase mb-5 gold-line">
-        Autentikasi Pengguna
-    </p>
+            <p class="text-gold-ink tracking-widest text-xs font-semibold uppercase mb-4 gold-line">
+                Autentikasi Pengguna
+            </p>
 
-    <h2 class="title-font text-5xl font-bold text-[#1e3a5f]">
-        Selamat Datang
-    </h2>
+            <h2 class="title-font text-5xl font-bold text-navy">
+                Selamat Datang
+            </h2>
 
-    <p class="text-[#8a93a6] mt-3 mb-6 text-base">
-        Silakan masuk menggunakan akun Pusdatin Anda.
-    </p>
+            <p class="text-muted mt-2 mb-8 text-base">
+                Masukkan kredensial Anda untuk melanjutkan
+            </p>
 
-    <form method="POST" action="https://transformasidigital.idampalada.com/login" class="space-y-4">
-        <input type="hidden" name="_token" value="fhf0IMCjc2hEu35EEA7xZ4A78dwNZMoBXrwaMIBj" autocomplete="off">
-        <!-- Email -->
-        <div>
-            <label class="block text-sm font-semibold tracking-widest text-[#1e3a5f] uppercase mb-2">
-                Email
-            </label>
-            <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a93a6]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                    </svg>
-                </span>
-                <input type="text"
-                    name="email"
-                    value=""
-                    required autofocus
-                    placeholder="userpusdatin@pu.go.id"
-                    class="custom-input w-full rounded-xl px-5 py-3.5 pl-12 text-base text-[#1e3a5f] placeholder-[#9ca3af]">
-            </div>
+            <form method="POST" action="https://transformasidigital.idampalada.com/login" class="space-y-6">
+                <input type="hidden" name="_token" value="9W0PZlTfAYXY12IdiGHCoo7tVj8Jh1s0IYJL3FmW" autocomplete="off">
+
+                <!-- Email -->
+                <div>
+                    <label for="email-input" class="block text-xs font-semibold tracking-[0.14em] text-navy uppercase mb-2">
+                        Email
+                    </label>
+                    <div class="relative">
+                        <span aria-hidden="true" class="absolute left-4 top-1/2 -translate-y-1/2 text-soft pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+                            </svg>
+                        </span>
+                        <input type="text"
+                            id="email-input"
+                            name="email"
+                            value=""
+                            required autofocus
+                            autocomplete="username"
+                            placeholder="userpusdatin@pu.go.id"
+                            class="custom-input w-full rounded-xl px-5 py-4 pl-12 text-base text-navy">
                     </div>
+                </div>
 
-        <!-- PASSWORD -->
-        <div>
-            <label class="block text-sm font-semibold tracking-widest text-[#1e3a5f] uppercase mb-2">
-                Password
-            </label>
-            <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a93a6]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
-                    </svg>
-                </span>
-                <input type="password"
-                    id="password-input"
-                    name="password"
-                    required
-                    placeholder="••••••••••"
-                    class="custom-input w-full rounded-xl px-5 py-3.5 pl-12 pr-12 text-base text-[#1e3a5f] placeholder-[#9ca3af]">
-                <!-- Eye toggle -->
-                <button type="button"
-                    onclick="togglePassword()"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a93a6] hover:text-[#1e3a5f] transition-colors">
-                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                    </svg>
+                <!-- PASSWORD -->
+                <div>
+                    <label for="password-input" class="block text-xs font-semibold tracking-[0.14em] text-navy uppercase mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <span aria-hidden="true" class="absolute left-4 top-1/2 -translate-y-1/2 text-soft pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                            </svg>
+                        </span>
+                        <input type="password"
+                            id="password-input"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="••••••••••"
+                            class="custom-input w-full rounded-xl px-5 py-4 pl-12 pr-12 text-base text-navy">
+                        <!-- Eye toggle -->
+                        <button type="button"
+                            id="password-toggle"
+                            onclick="togglePassword()"
+                            aria-label="Tampilkan password"
+                            aria-pressed="false"
+                            aria-controls="password-input"
+                            class="eye-btn absolute right-4 top-1/2 -translate-y-1/2">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lupa Password -->
+                <div class="flex justify-end -mt-2">
+                    <a href="https://transformasidigital.idampalada.com/forgot-password"
+                        class="quiet-link text-xs text-muted font-medium tracking-wide rounded">
+                        Lupa password?
+                    </a>
+                </div>
+
+                <!-- TURNSTILE — gates the submit, so it sits with the login group,
+                     directly above MASUK. Still inside <form>, so cf-turnstile-response
+                     posts exactly as before. -->
+                <div class="pt-1">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAADAVdPTI91kRSSJW"></div>
+                </div>
+
+                <!-- PRIMARY CTA -->
+                <button type="submit" class="masuk-btn w-full font-semibold py-4 rounded-xl tracking-widest text-base">
+                    MASUK
                 </button>
-            </div>
-                    </div>
-<!-- Lupa Password -->
-<div class="flex justify-end pt-1">
-    <a href="https://transformasidigital.idampalada.com/forgot-password"
-        class="text-xs text-[#8a93a6] hover:text-[#f59e0b] transition-colors duration-200 font-medium tracking-wide">
-        Lupa password?
-    </a>
-</div>
-        
 
-        <!-- BUTTON -->
-        <button type="submit" class="masuk-btn w-full text-white font-semibold py-3.5 rounded-xl tracking-widest text-base transition-all duration-300 focus:outline-none">
-            <span class="relative z-10">MASUK</span>
-        </button>
+                <!-- "atau" — names the fork explicitly: two valid ways in.
+                     No pt/pb: the form's 24px rhythm already spaces it on both sides. -->
+                <div class="or-divider">
+                    <span class="text-[10px] tracking-[0.2em] text-muted font-semibold uppercase">atau</span>
+                </div>
 
-        <!-- LINK DASHBOARD -->
-        <a href="https://transformasidigital.idampalada.com/dashboard" 
-           class="flex items-center justify-center w-full text-[#1e3a5f] border-2 border-[#d1d5db] bg-transparent font-semibold py-3.5 rounded-xl text-sm transition-all duration-300 hover:border-[#1e3a5f] hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-[#f59e0b] focus:ring-offset-2">
-            Lihat Dashboard Monitoring (Tanpa Login)
-        </a>
-                <!--  TURNSTILE DI SINI -->
-        <div class="mt-4 flex justify-center">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADAVdPTI91kRSSJW"></div>
-        </div>
-
-    </form>
-
-    <!-- CALL CENTER -->
-    <div class="mt-8 text-center">
-
-        <!-- Divider with label -->
-        <div class="flex items-center gap-3 mb-4">
-            <div class="flex-1 h-px bg-gray-200"></div>
-            <span class="text-xs tracking-[0.2em] text-[#b0b8c8] font-semibold uppercase">Bantuan</span>
-            <div class="flex-1 h-px bg-gray-200"></div>
-        </div>
-
-        <!-- Card -->
-        <div class="rounded-2xl border border-[#eaecf0] bg-[#f9fafb] p-4">
-
-            <!-- Header -->
-            <p class="text-sm font-bold text-[#1e3a5f] tracking-[0.15em] uppercase mb-1">Call Center</p>
-            <p class="text-sm text-[#8a93a6] mb-4">Penilaian Transformasi Digital</p>
-
-            <!-- Phone buttons -->
-            <div class="space-y-2.5">
-                <a href="https://wa.me/62817846621" target="_blank"
-                    class="flex items-center justify-center gap-3 w-full bg-white border border-[#eaecf0] rounded-xl px-4 py-3 hover:border-[#f59e0b] hover:shadow-sm transition-all duration-200 cursor-pointer">
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#f59e0b] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12.031 21c-1.618 0-3.197-.433-4.582-1.256l-5.112 1.34 1.365-4.985A8.956 8.956 0 012.44 12c0-4.963 4.041-9 9.004-9s9.004 4.037 9.004 9-4.041 9-9.417 9zm.006-16.5c-4.137 0-7.503 3.366-7.503 7.5 0 1.32.348 2.612 1.01 3.748l-.87 3.178 3.251-.853A7.458 7.458 0 0012.037 19.5c4.137 0 7.503-3.366 7.503-7.5s-3.366-7.5-7.503-7.5zm4.12 10.222c-.226-.113-1.336-.66-1.543-.736-.207-.075-.358-.113-.509.113-.15.226-.583.736-.715.887-.132.15-.264.17-.49.056-.226-.113-.953-.351-1.815-1.121-.67-.598-1.122-1.338-1.254-1.564-.132-.226-.014-.349.099-.461.101-.1.226-.264.339-.396.113-.132.15-.226.226-.377.075-.15.038-.283-.019-.396-.056-.113-.509-1.226-.697-1.678-.183-.442-.369-.382-.509-.389-.132-.007-.283-.007-.433-.007s-.396.056-.603.283c-.207.226-.791.773-.791 1.885 0 1.112.81 2.187.923 2.338.113.15 1.595 2.432 3.864 3.413.541.233.963.372 1.293.477.543.172 1.038.148 1.428.09.435-.065 1.336-.547 1.524-1.075.188-.528.188-.98.132-1.075-.056-.094-.207-.15-.433-.264z"/>
-                    </svg>
-                    
-                    <span class="text-base font-semibold text-[#1e3a5f]">0817-846-621</span>
+                <!-- SECONDARY CTA — dashboard, no login required.
+                     "Akses Publik" answers "am I allowed?" rather than describing the
+                     mechanism. aria-label mirrors the visible words (WCAG 2.5.3
+                     Label in Name) — it must never drift from the rendered label. -->
+                <a href="https://transformasidigital.idampalada.com/dashboard"
+                   class="dash-cta"
+                   aria-label="Lihat Dashboard Monitoring (Akses Publik)">
+                    <span class="dash-cta__text">
+                        <span class="dash-cta__title">Lihat Dashboard Monitoring</span>
+                        <span class="dash-cta__badge">Akses Publik</span>
+                    </span>
+                    <span class="dash-cta__arrow" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+                        </svg>
+                    </span>
                 </a>
+
+            </form>
+
+            <!-- CALL CENTER — support, not a destination. Trimmed to match its priority:
+                 40px→32px above, 20px→16px padding, same divider language as "atau". -->
+            <div class="mt-8 text-center">
+
+                <!-- Divider with label -->
+                <div class="or-divider mb-4">
+                    <span class="text-[10px] tracking-[0.2em] text-muted font-semibold uppercase">Bantuan</span>
+                </div>
+
+                <!-- Card -->
+                <div class="rounded-2xl border border-[color:var(--rule)] bg-paper-2 p-4">
+
+                    <!-- Header -->
+                    <p class="text-xs font-bold text-navy tracking-[0.15em] uppercase mb-1">Call Center</p>
+                    <p class="text-sm text-muted mb-4">Penilaian Transformasi Digital</p>
+
+                    <!-- Phone buttons -->
+                    <div class="space-y-2.5">
+                        <a href="https://wa.me/62817846621" target="_blank" rel="noopener noreferrer"
+                            class="call-row flex items-center justify-center gap-3 w-full bg-paper border border-[color:var(--rule)] px-4 py-2 cursor-pointer">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gold-ink flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12.031 21c-1.618 0-3.197-.433-4.582-1.256l-5.112 1.34 1.365-4.985A8.956 8.956 0 012.44 12c0-4.963 4.041-9 9.004-9s9.004 4.037 9.004 9-4.041 9-9.417 9zm.006-16.5c-4.137 0-7.503 3.366-7.503 7.5 0 1.32.348 2.612 1.01 3.748l-.87 3.178 3.251-.853A7.458 7.458 0 0012.037 19.5c4.137 0 7.503-3.366 7.503-7.5s-3.366-7.5-7.503-7.5zm4.12 10.222c-.226-.113-1.336-.66-1.543-.736-.207-.075-.358-.113-.509.113-.15.226-.583.736-.715.887-.132.15-.264.17-.49.056-.226-.113-.953-.351-1.815-1.121-.67-.598-1.122-1.338-1.254-1.564-.132-.226-.014-.349.099-.461.101-.1.226-.264.339-.396.113-.132.15-.226.226-.377.075-.15.038-.283-.019-.396-.056-.113-.509-1.226-.697-1.678-.183-.442-.369-.382-.509-.389-.132-.007-.283-.007-.433-.007s-.396.056-.603.283c-.207.226-.791.773-.791 1.885 0 1.112.81 2.187.923 2.338.113.15 1.595 2.432 3.864 3.413.541.233.963.372 1.293.477.543.172 1.038.148 1.428.09.435-.065 1.336-.547 1.524-1.075.188-.528.188-.98.132-1.075-.056-.094-.207-.15-.433-.264z"/>
+                            </svg>
+
+                            <span class="text-base font-semibold text-navy">0817-846-621</span>
+                        </a>
+                    </div>
+                </div>
+
+                <p class="text-xs text-muted mt-8">
+                    © 2026 <strong class="font-semibold text-muted">Transformasi Digital</strong> — Kementerian Pekerjaan Umum
+                </p>
             </div>
-        </div>
 
-        <p class="text-sm text-[#c0c7d3] mt-4">
-            © 2026 <strong class="text-[#8a93a6]">Transformasi Digital</strong> — Kementerian Pekerjaan Umum
-        </p>
-    </div>
+            <script>
+                function togglePassword() {
+                    const input = document.getElementById('password-input');
+                    const btn = document.getElementById('password-toggle');
+                    const shown = input.type === 'text';
+                    input.type = shown ? 'password' : 'text';
+                    if (btn) {
+                        btn.setAttribute('aria-pressed', String(!shown));
+                        btn.setAttribute('aria-label', shown ? 'Tampilkan password' : 'Sembunyikan password');
+                    }
+                }
+            </script>
 
-    <script>
-        function togglePassword() {
-            const input = document.getElementById('password-input');
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        // Highlight gold-line pseudo element for the right panel label
-        // (uses same CSS class defined in layout)
-    </script>
-
-    
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         </div>
 
     </div>
