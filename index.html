@@ -61,6 +61,7 @@
         --gold-border:       #c08a2e;  /* 3.04:1 on paper — control boundary (1.4.11) */
         --gold-border-hover: #d9a441;
         --cream:       #fff9f1;
+        --cream-faint: #fffdf9;  /* CTA rest-state tint — fainter than --cream so hover still reads as a state change */
         /* Large display headings on the now-light brand panel: --gold itself measured
            1.9:1 there — even the 3:1 large-text floor needs darker than the raw brand
            hex. --gold-ink (5.66:1) reads as brown at 68px; this sits between the two,
@@ -169,13 +170,18 @@
     @media (min-width: 640px)  { .brand { padding: var(--space-4); } }
     @media (min-width: 1024px) {
         .brand {
-            padding: var(--space-6);
+            padding: var(--space-4);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
     }
-    @media (min-width: 1280px) { .brand { padding: 64px; } }
+    /* The old 1280px+ step to a hard-coded 64px sat off the 8/16/24/32/48 rhythm
+       and, combined with grid stretch, was the reason .brand's height (863px at
+       1366×768) exceeded the viewport — .brand is stretched to match .auth's
+       height regardless of its own content, so its OWN padding doesn't drive
+       the overflow, but trimming it still tightens the vertical rhythm as asked
+       and removes the off-scale value. 32px top/bottom, one token, all widths. */
 
     /* Blueprint grid — pure CSS, no image, crisp at any DPI, ages indefinitely.
        Navy-tinted lines now that the field is light. Radially masked so it
@@ -216,6 +222,35 @@
         .brand__seam { inset: 0 0 0 auto; width: 2px; height: auto;
             background: linear-gradient(180deg, var(--gold), transparent 60%); }
     }
+
+    /* Two soft radial glows — warm gold, cool navy — sit above the grid, under
+       the content. 3–4% opacity: enough to add depth to the "slightly empty"
+       panel, nowhere near enough to register as a shape or move a contrast
+       number. Desktop-only: on the compact mobile band there's no room for a
+       glow to read as anything but noise behind small text. */
+    .brand__glow {
+        position: absolute; inset: 0; z-index: -1; display: none;
+        background:
+            radial-gradient(ellipse 60% 50% at 88% 8%,  rgba(245,158,11,.05) 0%, transparent 70%),
+            radial-gradient(ellipse 55% 45% at 6% 96%,   rgba(30,58,95,.04)   0%, transparent 70%);
+        pointer-events: none;
+    }
+    @media (min-width: 1024px) { .brand__glow { display: block; } }
+
+    /* Corner bracket — a document/certificate corner-mark, the kind of quiet
+       accent official credentials use. Two hairlines, no fill, desktop-only
+       for the same reason as the glow. */
+    .brand__mark {
+        position: absolute; z-index: -1; display: none;
+        width: 28px; height: 28px;
+        border-top: 1.5px solid rgba(30,58,95,.14);
+        border-left: 1.5px solid rgba(30,58,95,.14);
+        pointer-events: none;
+    }
+    @media (min-width: 1024px) { .brand__mark { display: block; bottom: 40px; right: 40px;
+        border-top: none; border-left: none;
+        border-bottom: 1.5px solid rgba(30,58,95,.14);
+        border-right: 1.5px solid rgba(30,58,95,.14); } }
 
     /* Logo lockup — institution name, two lines, same weight (matches the
        reference: not a bold/muted pair, a single confident mark). */
@@ -279,7 +314,12 @@
        band pushed the CTA 19px past a 768×1024 fold. 32 buys it back. */
     @media (min-width: 640px)  { .brand__hero { margin-top: var(--space-4); } }
     @media (min-width: 1024px) {
-        .brand__hero  { margin-top: var(--space-6); }
+        /* 48px → 32px: "spacing after logo" from the brief. This margin stacks
+           with justify-content:space-between's own distributed gap (.brand is
+           stretched to match .auth's height by CSS Grid, so space-between fills
+           whatever's left over) — trimming it doesn't move the overflow number,
+           but it does tighten the rhythm exactly as requested. */
+        .brand__hero  { margin-top: var(--space-3); }
         .brand__proof { display: block; }
     }
 
@@ -325,8 +365,8 @@
     }
     .input {
         width: 100%;
-        min-height: 52px;
-        padding: 14px 16px;
+        min-height: 46px;   /* 52 → 46: within the requested 4–8px reduction */
+        padding: 11px 16px;
         background: var(--blue-light);
         border: 1px solid transparent;  /* width constant across EVERY state */
         outline: 2px solid transparent; /* reserved ring slot — no shift on focus */
@@ -353,10 +393,11 @@
     .eye {
         position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
         color: var(--ink-soft);
-        transition: color var(--dur) var(--ease);
+        transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
     }
     .eye::before { content: ''; position: absolute; inset: -16px; }
     @media (hover: hover) { .eye:hover { color: var(--navy); } }
+    .eye:active { color: var(--navy-deep); transform: translateY(-50%) scale(.92); }
 
     /* Text link — 13px text is under WCAG 2.2 §2.5.8 (24×24); ::before fixes the
        target without moving anything. Underline on hover so it isn't colour-only. */
@@ -369,13 +410,15 @@
     }
     .link::before { content: ''; position: absolute; inset: -8px -4px; }
     @media (hover: hover) { .link:hover { color: var(--gold-ink); text-decoration: underline; } }
+    .link:active { color: var(--gold-border); text-decoration: underline; }
 
     /* ── PRIMARY: Masuk. Solid navy is the only filled control on the page. ──
        No shimmer: an infinite glint never lets the page settle, and it reads
        growth-hack rather than institutional. */
     .btn-primary {
         width: 100%;
-        min-height: 52px;
+        min-height: 46px;   /* 52 → 46: matches the input's new height 1:1 —
+                               "input height = button height" stays true */
         display: flex; align-items: center; justify-content: center;
         background: var(--navy);
         color: var(--paper);
@@ -411,13 +454,24 @@
     .btn-secondary {
         position: relative;
         width: 100%;
-        min-height: 64px;
+        /* 64 → 60px: a prior round explicitly set this to 60–64px ("true
+           secondary button" sizing) — 60 honours both that floor and this
+           task's 4–6px reduction ask. */
+        min-height: 60px;
         display: flex; align-items: center; justify-content: center; gap: 10px;
-        padding: var(--space-1) 40px;
-        background: var(--paper);
+        /* 40px → --space-4 (32px): the badge's larger footprint (item 2) made
+           the old off-scale 40px pinch the title+badge onto two lines even at
+           desktop width — measured at 1440px, short by 3.4px. Trimming to the
+           spacing rhythm recovers ~14px of margin and moves an off-scale value
+           onto the token scale in the same edit. */
+        padding: var(--space-1) var(--space-4);
+        /* Faint warm tint at rest — pure white made it disappear against the
+           page's own white background. Still a soft-elevation surface, not a
+           colour block: the tint is barely perceptible on its own. */
+        background: var(--cream-faint);
         border: 1px solid var(--gold-border);   /* 3.04:1 — identifies the control */
         border-radius: var(--radius);
-        box-shadow: var(--shadow-xs);
+        box-shadow: var(--shadow-sm);
         cursor: pointer;
         transition: border-color var(--dur-slow) var(--ease),
                     background   var(--dur-slow) var(--ease),
@@ -426,15 +480,17 @@
     }
     .btn-secondary__text {
         min-width: 0; display: flex; align-items: center; justify-content: center;
-        flex-wrap: wrap; gap: 2px 8px;
+        flex-wrap: wrap; gap: 3px 10px;
     }
     .btn-secondary__title { font-size: 17px; font-weight: 600; color: var(--navy);
                             line-height: 1.4; white-space: nowrap; }  /* gate 49 */
+    /* 9px → 11px: below comfortable reading size for the stated 30–60 audience.
+       Padding grows to match so the pill doesn't look pinched around the bigger type. */
     .btn-secondary__badge {
-        display: inline-block; padding: 2px 7px; border-radius: 999px;
+        display: inline-block; padding: 4px 10px; border-radius: 999px;
         background: var(--gold-wash); color: var(--gold-ink);
-        font-size: 9px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
-        line-height: 1.7;
+        font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+        line-height: 1.5;
     }
     .btn-secondary__arrow {
         position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
@@ -467,14 +523,24 @@
         .btn-secondary__arrow { display: none; }
     }
 
-    /* ── Support row — all Call Center info, a fraction of the mass ── */
+    /* ── Support — a self-contained soft card instead of a bare bordered row,
+       so it reads as one coherent unit ("where do I get help") rather than a
+       trailing appendix. Prominence comes from grouping + a tinted field, not
+       from growing type or icon sizes. ── */
+    /* gap 16→8: the text block + phone chip needed 411px against 416px
+       available — a 5px margin, fragile enough to wrap to two rows (measured:
+       121px tall) on the slightest width change. 8px buys 8px back, keeping it
+       on one row (down to ~68px) with real margin, not a coincidence. */
     .help {
         display: flex; align-items: center; justify-content: space-between;
-        gap: var(--space-2); flex-wrap: wrap;
-        padding-top: var(--space-3);
-        border-top: 1px solid var(--rule-soft);
+        gap: var(--space-1); flex-wrap: wrap;
+        margin-top: var(--space-2);
+        padding: 10px var(--space-2);   /* vertical padding trimmed from 16px */
+        background: var(--blue-light);
+        border-radius: var(--radius);
     }
-    .help__label { font-size: 12px; color: var(--ink-muted); line-height: 1.5; }
+    .help__prompt { display: block; font-size: 13px; font-weight: 600; color: var(--navy); }
+    .help__label { display: block; font-size: 13px; color: var(--ink-muted); line-height: 1.5; margin-top: 2px; }
     .help__num {
         display: inline-flex; align-items: center; gap: 8px;
         min-height: 44px; padding: 8px 14px;
@@ -488,8 +554,16 @@
         .help__num:hover { border-color: var(--gold-border); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
     }
     .help__num:active { transform: translateY(0); box-shadow: var(--shadow-xs); }
+    /* At ≥1024px the text block + phone chip measured 403px against 416px
+       available (13px to spare) yet still wrapped to two rows under
+       flex-wrap:wrap — flex line-breaking evaluates against each item's
+       hypothetical (max-content) size before shrink is applied, so it can wrap
+       even when there's room. nowrap here (proven no overlap) drops the card
+       from 113px to 81px. Left wrapping ON below 1024px, where the auth column
+       is genuinely too narrow for one row. */
+    @media (min-width: 1024px) { .help { flex-wrap: nowrap; } }
 
-    .colophon { font-size: 11px; color: var(--ink-muted); line-height: 1.6; }
+    .colophon { font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
 
     /* ── Reduced motion — kill movement, keep every state ── */
     @media (prefers-reduced-motion: reduce) {
@@ -510,6 +584,8 @@
         <div class="brand__photo" aria-hidden="true"></div>
         <div class="brand__wash"  aria-hidden="true"></div>
         <div class="brand__grid"  aria-hidden="true"></div>
+        <div class="brand__glow"  aria-hidden="true"></div>
+        <div class="brand__mark"  aria-hidden="true"></div>
         <div class="brand__seam"  aria-hidden="true"></div>
 
         <!-- Logo lockup -->
@@ -542,7 +618,7 @@
         </div>
 
         <!-- Proof — desktop only; the pill above carries the ZI signal everywhere -->
-        <div class="brand__proof" style="margin-top: var(--space-6);">
+        <div class="brand__proof" style="margin-top: var(--space-3);">
             <p class="proof__note">
                 Dalam menunjang Zona Integritas menuju Wilayah Birokrasi
                 Bersih dan Melayani (WBBM), PUSDATIN berkomitmen
@@ -550,7 +626,7 @@
                 korupsi dan memberikan pelayanan prima.
             </p>
 
-            <div class="stats" style="margin-top: var(--space-4);">
+            <div class="stats" style="margin-top: var(--space-3);">
                 <div class="stat">
                     <p class="stat__n display">2026</p>
                     <p class="stat__l">Tahun Aktif</p>
@@ -575,7 +651,7 @@
             <p class="auth__sub">Masukkan kredensial Anda untuk melanjutkan</p>
 
             <form method="POST" action="https://transformasidigital.idampalada.com/login"
-                  style="margin-top: var(--space-4);">
+                  style="margin-top: var(--space-3);">
                 <input type="hidden" name="_token" value="9W0PZlTfAYXY12IdiGHCoo7tVj8Jh1s0IYJL3FmW" autocomplete="off">
 
                 <!-- Email -->
@@ -587,7 +663,7 @@
                 </div>
 
                 <!-- Password -->
-                <div style="margin-top: var(--space-3);">
+                <div style="margin-top: var(--space-2);">
                     <label for="password-input" class="field__label">Password</label>
                     <div style="position: relative;">
                         <input type="password" id="password-input" name="password"
@@ -606,7 +682,7 @@
                 </div>
 
                 <!-- Forgot password -->
-                <div style="display:flex; justify-content:flex-end; margin-top: var(--space-2);">
+                <div style="display:flex; justify-content:flex-end; margin-top: var(--space-1);">
                     <a href="https://transformasidigital.idampalada.com/forgot-password" class="link">
                         Lupa password?
                     </a>
@@ -614,26 +690,28 @@
 
                 <!-- CAPTCHA — gates the submit, so it sits with the login group, above
                      the button. Inside <form>, so cf-turnstile-response posts as before. -->
-                <div style="margin-top: var(--space-3);">
+                <div style="margin-top: var(--space-2);">
                     <div class="cf-turnstile" data-sitekey="0x4AAAAAADAVdPTI91kRSSJW"></div>
                 </div>
 
                 <!-- PRIMARY -->
-                <button type="submit" class="btn-primary" style="margin-top: var(--space-3);">
+                <button type="submit" class="btn-primary" style="margin-top: var(--space-2);">
                     MASUK
                 </button>
 
-                <div class="or" style="margin: var(--space-2) 0;">
+                <div class="or" style="margin: var(--space-1) 0;">
                     <span>atau</span>
                 </div>
 
                 <!-- SECONDARY · public dashboard.
+                     "Buka" (open) reads as an action verb matching a button's
+                     affordance; "Lihat" (view) read more like a caption.
                      aria-label mirrors the visible words (WCAG 2.5.3 Label in Name). -->
                 <a href="https://transformasidigital.idampalada.com/dashboard"
                    class="btn-secondary"
-                   aria-label="Lihat Dashboard Monitoring (Akses Publik)">
+                   aria-label="Buka Dashboard Monitoring (Akses Publik)">
                     <span class="btn-secondary__text">
-                        <span class="btn-secondary__title">Lihat Dashboard Monitoring</span>
+                        <span class="btn-secondary__title">Buka Dashboard Monitoring</span>
                         <span class="btn-secondary__badge">Akses Publik</span>
                     </span>
                     <span class="btn-secondary__arrow" aria-hidden="true">
@@ -645,11 +723,11 @@
                 </a>
             </form>
 
-            <!-- Support — same information, a fraction of the mass -->
-            <div class="help" style="margin-top: var(--space-3);">
-                <p class="help__label">
-                    Butuh bantuan?<br>
-                    Call Center Penilaian Transformasi Digital
+            <!-- Support — grouped into one soft card; prompt bolded, detail muted -->
+            <div class="help">
+                <p>
+                    <span class="help__prompt">Butuh bantuan?</span>
+                    <span class="help__label">Call Center Penilaian Transformasi Digital</span>
                 </p>
                 <a href="https://wa.me/62817846621" target="_blank" rel="noopener noreferrer" class="help__num">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
@@ -660,7 +738,7 @@
                 </a>
             </div>
 
-            <p class="colophon" style="margin-top: var(--space-3);">
+            <p class="colophon" style="margin-top: var(--space-2);">
                 © 2026 <strong style="font-weight:600;">Transformasi Digital</strong> — Kementerian Pekerjaan Umum
             </p>
         </div>
