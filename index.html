@@ -541,8 +541,13 @@
     }
     .help__prompt { display: block; font-size: 13px; font-weight: 600; color: var(--navy); }
     .help__label { display: block; font-size: 13px; color: var(--ink-muted); line-height: 1.5; margin-top: 2px; }
+    /* flex-shrink:0 + nowrap — without these the chip was squeezed below its
+       content width when .help wraps to two rows on a narrower auth column,
+       forcing "0817-846-621" onto two lines (the phone number, gate 49's rule
+       for CTA labels, applies here too). */
     .help__num {
         display: inline-flex; align-items: center; gap: 8px;
+        flex-shrink: 0; white-space: nowrap;
         min-height: 44px; padding: 8px 14px;
         border: 1px solid var(--rule); border-radius: var(--radius);
         background: var(--paper);
